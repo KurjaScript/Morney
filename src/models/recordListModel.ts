@@ -1,8 +1,12 @@
+import clone from '@/lib/clone';
+
 const localStorageKeyName = 'recordList';
 const recordListModel = {
     data:[] as RecordItem[],
-    clone(data: RecordItem[] | RecordItem){
-        return JSON.parse(JSON.stringify(data));
+    create(record: RecordItem){
+        const record2: RecordItem = clone(record);
+        record2.createdAT = new  Data();
+        this.data.push(record2);
     },
     //获取数据
     fetch(){
