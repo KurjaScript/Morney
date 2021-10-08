@@ -1,11 +1,11 @@
 <template>
   <div>
-    <label class="notes">
+    <label class="formItem">
       <span class="name">{{this.fieldName}}</span>
       <input type="text"
              :value="value"
              @input="onValueChanged($event.target.value)"
-             :placeholder="this.placeholder">
+             :placeholder="placeholder">
     </label>
   </div>
 </template>
@@ -21,7 +21,7 @@
     @Prop( {required:true}) fieldName!: string;
     @Prop() placeholder?:string;
 
-    @Watch('value')
+    // @Watch('value')
     onValueChanged(value:string){
       this.$emit('update:value',value);
     }
@@ -29,8 +29,8 @@
 </script>
 
 <style lang="scss" scoped>
-  .FormItem {
-    font-size: 14px;
+  .formItem {
+    font-size: 16px;
     padding-left: 16px;
     display: flex;
     align-items: center;
