@@ -23,6 +23,7 @@
   import Button from '@/components/Button.vue';
   import store from '@/store/index2'
 
+
   @Component({
     components: {Button}
   })
