@@ -7,3 +7,5 @@ const store = {
 };
 
 export default store
+
+//我就试一试
