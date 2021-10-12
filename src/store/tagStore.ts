@@ -1,10 +1,11 @@
-import createId from '@/lib/createdId'
+import createId from '@/lib/idCreator'
+const localStorageKeyName = 'tagList';
 
 const tagStore = {
     tagList : [] as Tag[],
     fetchTags(){
         this.tagList = JSON.parse(window.localStorage.getItem(localStorageKeyName) || '[]') ;
-        return tagList
+        return this.tagList
     }
     findTag(id:string) {
         return this.tagList.filter(t => t.id === id)[0];
@@ -35,7 +36,7 @@ const tagStore = {
        return true;
     },
     updateTag(id:string,name:string){
-         const idList = this.data.map(item => item.id);
+         const idList = this.tagList.map(item => item.id);
          if(idList.indexOf(id)>=0){
             const names = this.tagList.map(item => item.name)
             if(names.indexOf(name) >= 0){
