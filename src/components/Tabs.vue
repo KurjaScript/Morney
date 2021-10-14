@@ -2,7 +2,7 @@
   <ul class="tabs">
     <li v-for="item in dataSource" :key="item.value"
         :class="liClass(item)"
-        @click="selected(item)">
+        @click="select(item)">
       {{item.text}}
     </li>
   </ul>
@@ -12,7 +12,7 @@
   import Vue from 'vue';
   import {Component,Prop} from 'vue-property-decorator';
 
-  type DataSourceItem = {text: string,value:string}
+  type DataSourceItem = {text: string,value: string}
 
   @Component
   export default class Tabs extends Vue{
@@ -23,13 +23,13 @@
 
     liClass(item:DataSourceItem){
       return {
-        [THIS.ClassPrefix + '-tabs-item']:this.classPrefix,
-        selected:item.value === this.valueOf()
+        [this.classPrefix + '-tabs-item']:this.classPrefix,
+        selected: item.value === this.value
       };
     }
 
     select(item:DataSourceItem){
-      this.$emit('updata:value',item.value);
+      this.$emit('update:value',item.value);
     }
   }
 </script>
