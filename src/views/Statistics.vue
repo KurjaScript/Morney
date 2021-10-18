@@ -3,13 +3,9 @@
     <Tabs class-prefix="type"
           :data-source="recordTypeList"
           :value.sync="type"/>
-    <Tabs class-prefix="interval"
-         :data-source="intervalList"
-         :value.sync="interval"/>
-
       <ol>
-        <li v-for="(group,key) in result" :key="group.title">
-          <h3 class="title">{{beautify(group.title)}}</h3>
+        <li v-for="(group,index) in groupedList" :key="index">
+          <h3 class="title">{{beautify(group.title)}} <span>￥{{group.total}}</span></h3>
           <ol>
             <li v-for="item in group.items" :key="item.id"
                 class="record">
@@ -29,10 +25,10 @@
 <script lang="ts">
   import Vue from 'vue';
   import {Component} from 'vue-property-decorator';
-  import intervalList from '@/constants/intervalList';
   import recordTypeList from '@/constants/recordTypeList';
   import Tabs from '@/components/Tabs.vue';
   import dayjs from 'dayjs';
+  import clone from '@/lib/clone'
 
   const  api = dayjs();
   console.log(api)
@@ -64,19 +60,31 @@
       return (this.$store.state as RootState).recordList;
     }
 
-    get result(){
+    get groupedList(){
       const {recordList} = this;
-      type Items = RecordItem[];
-      type HashTableValue = {title: string, items: Items}
-
-      const hashTable: {[key:string]: HashTableValue} = {};
-      for (let i = 0; i < recordList.length; i++){
-        const [data, time] = recordList[i].createdAT!.split('T');
-        hashTable[data] = hashTable[data] || {title: data, items:[]}
-        hashTable[data].items.push(recordList[i])
+      if(recordList.length === 0){return []}
+      const newList = clone(recordList)
+          .filter(r => r.type === this.type)
+          .sort((a, b) => dayjs(b.createdAT).valueOf() - dayjs(a.createdAT).valueOf());
+      type Result = {title: string, total?: number, items: RecordItem[]}[]
+      const result: Record = [{title: dayjs(newList[0].createdAT).format('YYYY-M-D'), items:[newList[0]]}]
+      for (let i = 1; i < newList.length; i++){
+        const current = newList[i];
+        const last =  result[result.length - 1];
+        if(dayjs(last.title).isSame(dayjs(current.createdAT),'day')){
+          last.items.push(current)
+        }else{
+          result.push({title: dayjs(current.createdAT).format('YYYY-M-D'),  items: [current]});
+        }
       }
-      console.log(hashTable);
-      return hashTable;
+      console.log('------');
+      //把forEach换为map，map是一个有返回值的forEach
+      result.map(group =>{
+        group.total = group.items.reduce((sum, item) => sum + item.amount, 0)
+      });
+      return result;
+
+
     }
 
     beforeCreate(){
@@ -84,8 +92,6 @@
     }
 
     type = '-';
-    interval = 'day';
-    intervalList = intervalList;
     recordTypeList = recordTypeList;
   }
 </script>
@@ -93,9 +99,9 @@
 <style scoped lang="scss">
 
 ::v-deep .type-tabs-item{
-  background:white;
+  background:#C4C4C4;
   &.selected{
-    background: #C4C4C4;
+    background: white;
     &::after{
       display: none;
     }
